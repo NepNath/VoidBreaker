@@ -3,36 +3,37 @@ using UnityEngine;
 
 public class BaseMovements : MonoBehaviour
 {
+    //----------- Variables --------------//
     public float walkSpeed;
     public float runSpeed;
     public float jumpForce;
 
     private Rigidbody rb;
     
-    public enum MovementStates
-    {
-        Walk,
-        Run,
-        Airborne
-    }
-
     public MovementStates currentState;
 
+    
+    //----------- Unity built in --------------//
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
-
-    private void FixedUpdate()
+    private void FixedUpdate() 
     {
         Movement();
     }
-
-    private void Update()
+    private void Update() 
     {
         UpdateMovementState();
     }
-
+    
+    //----------- Movement logic --------------//
+    /// <summary>
+    /// Function to execute base movement on a component.
+    /// doesn't do it on IA controlled entity, only players
+    ///
+    /// don't manage complexe movements like slides, wall jumps, and other advanced mechanics.
+    /// </summary>
     private void Movement()
     {
         float hrz = Input.GetAxisRaw("Horizontal");
@@ -44,6 +45,26 @@ public class BaseMovements : MonoBehaviour
         rb.linearVelocity = new Vector3(movement.x, rb.linearVelocity.y, movement.z);
     }
 
+    
+    //----------- Movement state management --------------//
+    /// <summary>
+    /// Movement states for the player character.
+    /// 
+    /// To use to manage different movement variables like speed, damping etc...
+    /// </summary>
+    public enum MovementStates
+    {
+        Walk,
+        Run,
+        Airborne
+    }
+
+    /// <summary>
+    /// Updates the movement state of the player character depending on its current situation
+    /// </summary>
+    /// <returns>
+    /// The updated movement state of the player character.
+    /// </returns>
     private MovementStates UpdateMovementState()
     {
         if (Input.GetKey(KeyCode.LeftShift))
@@ -57,7 +78,13 @@ public class BaseMovements : MonoBehaviour
         
         return currentState;
     }
-
+    
+    /// <summary>
+    /// assign the speed value of the player depending on its current movement state
+    /// </summary>
+    /// <returns>
+    /// current speed float value of the player
+    /// </returns>
     public float CurrentMovementSpeed()
     {
         switch(currentState)
