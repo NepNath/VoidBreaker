@@ -6,17 +6,20 @@ public class BaseMovements : MonoBehaviour
     //----------- Variables --------------//
     public float walkSpeed;
     public float runSpeed;
+    public float airBorneSpeed;
     public float jumpForce;
 
     public static Rigidbody rb;
     
     public MovementStates currentState;
-
+    
+    private GroundDetector GroundDetector;
     
     //----------- Unity built in --------------//
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        GroundDetector = GetComponent<GroundDetector>();
     }
     private void FixedUpdate() 
     {
@@ -24,6 +27,7 @@ public class BaseMovements : MonoBehaviour
     }
     private void Update() 
     {
+        Jump();
         UpdateMovementState();
     }
     
@@ -39,13 +43,22 @@ public class BaseMovements : MonoBehaviour
         float hrz = Input.GetAxisRaw("Horizontal");
         float vrt = Input.GetAxisRaw("Vertical");
 
-        Vector3 inputDirection = new Vector3(hrz, 0f, vrt);
+        Vector3 inputDirection = transform.TransformDirection(new Vector3(hrz, 0f, vrt));
 
         Vector3 movement = inputDirection.normalized * CurrentMovementSpeed();
         rb.linearVelocity = new Vector3(movement.x, rb.linearVelocity.y, movement.z);
+        
     }
-
-    
+    /// <summary>
+    /// Executes the logic for the jump action of the player character.
+    /// </summary>
+    private void Jump()
+    {
+        if (GroundDetector.IsGrounded() && Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
+        }
+    }
     //----------- Movement state management --------------//
     /// <summary>
     /// Movement states for the player character.
@@ -58,7 +71,6 @@ public class BaseMovements : MonoBehaviour
         Run,
         Airborne
     }
-
     /// <summary>
     /// Updates the movement state of the player character depending on its current situation
     /// </summary>
@@ -67,9 +79,13 @@ public class BaseMovements : MonoBehaviour
     /// </returns>
     private MovementStates UpdateMovementState()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && GroundDetector.IsGrounded())
         {
             currentState = MovementStates.Run;
+        }
+        else if(!GroundDetector.IsGrounded())
+        {
+            currentState = MovementStates.Airborne;
         }
         else
         {
@@ -78,7 +94,6 @@ public class BaseMovements : MonoBehaviour
         
         return currentState;
     }
-    
     /// <summary>
     /// assign the speed value of the player depending on its current movement state
     /// </summary>
@@ -93,6 +108,8 @@ public class BaseMovements : MonoBehaviour
                 return walkSpeed;
             case MovementStates.Run:
                 return runSpeed;
+            case MovementStates.Airborne:
+                return airBorneSpeed;
             default:
                 return 0f;
         }

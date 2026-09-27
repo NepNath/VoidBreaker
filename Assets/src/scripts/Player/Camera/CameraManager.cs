@@ -18,6 +18,8 @@ public class CameraManager : MonoBehaviour
     private void Start()
     {
         playerCamera = GetComponentInChildren<Camera>();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void FixedUpdate()
@@ -27,8 +29,8 @@ public class CameraManager : MonoBehaviour
     
     void cameraMovement()
     {
-        float mouseVrt = Input.GetAxis("Mouse Y") * sensitivity;
-        float mouseHrz = Input.GetAxis("Mouse X") * sensitivity;
+        float mouseVrt = Input.GetAxis("Mouse Y") * sensitivity * 10f;
+        float mouseHrz = Input.GetAxis("Mouse X") * sensitivity * 10f;
         
         yaw += mouseHrz;
         pitch -= mouseVrt; 
