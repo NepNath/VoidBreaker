@@ -8,7 +8,7 @@ public class BaseMovements : MonoBehaviour
     public float runSpeed;
     public float jumpForce;
 
-    private Rigidbody rb;
+    public static Rigidbody rb;
     
     public MovementStates currentState;
 
