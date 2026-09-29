@@ -559,6 +559,7 @@ GameObject:
   - component: {fileID: 1046435524}
   - component: {fileID: 1046435526}
   - component: {fileID: 1046435527}
+  - component: {fileID: 1046435528}
   m_Layer: 0
   m_Name: PlayerContainer
   m_TagString: Player
@@ -595,11 +596,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f58a1c83ec14bcd4792a978003a1fed7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BaseMovements
-  walkSpeed: 5
-  runSpeed: 10
-  airBorneSpeed: 2
-  jumpForce: 10
-  currentState: 0
+  WalkSpeed: 5
+  DashForce: 120
+  AirBorneSpeed: 2
+  JumpForce: 5
+  rb: {fileID: 0}
+  CurrentState: 0
 --- !u!54 &1046435525
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -658,6 +660,21 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &1046435528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046435522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26acf7bbf0a631542aae924484d4f04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DashManager
+  dashAvailable: 1
+  isDashing: 0
+  dashCooldown: 2
 --- !u!43 &1524649622
 Mesh:
   m_ObjectHideFlags: 0

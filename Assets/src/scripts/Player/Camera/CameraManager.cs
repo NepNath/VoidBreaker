@@ -13,10 +13,12 @@ public class CameraManager : MonoBehaviour
     private float maxPitch = 90f;
     
     [SerializeField] private Camera playerCamera;
+    private BaseMovements playerMovements;
 
 
     private void Start()
     {
+        playerMovements = GetComponent<BaseMovements>();
         playerCamera = GetComponentInChildren<Camera>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -38,7 +40,7 @@ public class CameraManager : MonoBehaviour
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-        BaseMovements.rb.transform.Rotate(Vector3.up * mouseHrz);
+        playerMovements.rb.transform.Rotate(Vector3.up * mouseHrz);
 
     }
 }
