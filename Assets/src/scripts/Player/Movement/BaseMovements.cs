@@ -5,10 +5,17 @@ public class BaseMovements : MonoBehaviour
 {
     //----------- Variables --------------//
     [Header("Movement variables")]
-    public float WalkSpeed;
-    public float DashForce;
-    public float AirBorneSpeed;
-    public float JumpForce;
+    public float walkSpeed;
+    public float dashForce;
+    public float airBorneSpeed;
+    public float jumpForce;
+    
+    [Header("Damping variables")]
+    public float groundDamping;
+    public float airBorneDamping;
+    public float dashDamping;
+    
+    [HideInInspector] public float PlayerDamping;
     
     [Header("References")]
     public Rigidbody rb;
@@ -22,6 +29,7 @@ public class BaseMovements : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         GroundDetector = GetComponent<GroundDetector>();
         DashManager = GetComponent<DashManager>();
+        rb.linearDamping = PlayerDamping;
     }
     private void FixedUpdate() 
     {
@@ -32,6 +40,8 @@ public class BaseMovements : MonoBehaviour
         Jump();
         DashManager.DashAction();
         UpdateMovementState();
+        CurrentPlayerDamping();
+        
     }
     
     //----------- Movement logic --------------//
@@ -42,7 +52,15 @@ public class BaseMovements : MonoBehaviour
     /// </summary>
     private void Movement()
     {
-        rb.linearVelocity = new Vector3(CurrentMovementDirection().x * CurrentMovementSpeed(), rb.linearVelocity.y, CurrentMovementDirection().z * CurrentMovementSpeed()) ;
+        if (CurrentState == MovementStates.Dash)
+        {
+            return;
+        }
+        rb.AddForce(new Vector3(
+            CurrentMovementDirection().x * CurrentMovementSpeed(),
+            0,
+            CurrentMovementDirection().z * CurrentMovementSpeed()
+            ), ForceMode.VelocityChange);
     }
     /// <summary>
     /// Executes the logic for the jump action of the player character.
@@ -51,7 +69,7 @@ public class BaseMovements : MonoBehaviour
     {
         if (GroundDetector.IsGrounded() && Input.GetKeyDown(KeyCode.Space))
         {
-            rb.AddForce(new Vector3(0, JumpForce, 0), ForceMode.Impulse);
+            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
         }
     }
     //----------- Movement state management --------------//
@@ -62,7 +80,8 @@ public class BaseMovements : MonoBehaviour
     public enum MovementStates
     {
         Walk,
-        Airborne
+        Airborne,
+        Dash,
     }
     /// <summary>Updates the movement state of the player character depending on its current situation</summary>
     /// <returns>The updated movement state of the player character.</returns>
@@ -71,10 +90,17 @@ public class BaseMovements : MonoBehaviour
         if(!GroundDetector.IsGrounded())
         {
             CurrentState = MovementStates.Airborne;
+            PlayerDamping = airBorneDamping;
+        }
+        else if (DashManager.isDashing)
+        {
+            CurrentState = MovementStates.Dash;
+            PlayerDamping = dashDamping;
         }
         else
         {
             CurrentState = MovementStates.Walk;
+            PlayerDamping = groundDamping;
         }
         
         return CurrentState;
@@ -86,13 +112,32 @@ public class BaseMovements : MonoBehaviour
         switch(CurrentState)
         {
             case MovementStates.Walk:
-                return WalkSpeed;
+                return walkSpeed;
             case MovementStates.Airborne:
-                return AirBorneSpeed;
+                return airBorneSpeed;
             default:
                 return 0f;
         }
     }
+    
+    /// <summary>assign the speed value of the player depending on its current movement state</summary>
+    /// <returns> current speed float value of the player</returns>
+    public float CurrentPlayerDamping()
+    {
+        rb.linearDamping = PlayerDamping;
+        switch(CurrentState)
+        {
+            case MovementStates.Walk:
+                return groundDamping;
+            case MovementStates.Airborne:
+                return airBorneDamping;
+            case MovementStates.Dash:
+                return dashDamping;
+            default:
+                return 0f;
+        }
+    }
+
 
     /// <summary>Gets the current movement direction of the player </summary>
     /// <returns> A vector3 representing the current movement direction of the player</returns>

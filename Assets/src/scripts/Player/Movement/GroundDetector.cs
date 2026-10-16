@@ -2,27 +2,37 @@ using UnityEngine;
 
 public class GroundDetector : MonoBehaviour
 {
-    
-    [Range(0f, 1f)]
-    [SerializeField] float detectionRadius;
+    [Range(0f, 2f)]
+    [SerializeField] private float detectionDistance;
     [SerializeField] private Vector3 detectionOffset;
     public LayerMask groundLayerMask;
 
     /// <summary>
-    /// Determines whether the player is currently grounded by checking for collision with the "Ground" layer mask.
+    /// Determines whether the player is currently grounded by casting a ray downward on the "Ground" layer mask.
     /// </summary>
     /// <returns>
     /// A boolean value indicating whether the player is grounded.
     /// </returns>
     public bool IsGrounded()
     {
-        return Physics.CheckSphere(transform.position + detectionOffset, detectionRadius, groundLayerMask);
+        Vector3 rayOrigin = transform.position + detectionOffset;
+        return Physics.Raycast(rayOrigin, Vector3.down, detectionDistance, groundLayerMask);
     }
-    
+
     private void OnDrawGizmos()
     {
-        Gizmos.color = IsGrounded() ? Color.green : Color.red;
-        Gizmos.DrawSphere(transform.position + detectionOffset, detectionRadius);
+        Vector3 rayOrigin = transform.position + detectionOffset;
+        Vector3 rayEnd = rayOrigin + Vector3.down * detectionDistance;
+
+        if (IsGrounded())
+        {
+            Gizmos.color = Color.green;
+        }
+        else
+        {
+            Gizmos.color = Color.red;
+        }
+
+        Gizmos.DrawLine(rayOrigin, rayEnd);
     }
-    
 }

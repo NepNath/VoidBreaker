@@ -5,6 +5,7 @@ public class DashManager : MonoBehaviour
     public bool dashAvailable;
     public bool isDashing;
     [SerializeField] private float dashCooldown;
+    [SerializeField] private float dashDuration;
     
     private BaseMovements playerMovements;
     
@@ -19,16 +20,20 @@ public class DashManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashAvailable)
         {
             StartCoroutine(DashStateManager(dashCooldown));
-            playerMovements.rb.AddForce(playerMovements.CurrentMovementDirection() * (playerMovements.DashForce * 10f), ForceMode.Impulse);
+            playerMovements.rb.AddForce(playerMovements.CurrentMovementDirection() * (playerMovements.dashForce), ForceMode.Impulse);
         }
     }
     
-    IEnumerator DashStateManager(float dashCooldown)
+    IEnumerator DashStateManager(float cooldown)
     {
         dashAvailable = false;
         isDashing = true;
-        yield return new WaitForSecondsRealtime(dashCooldown);
-        dashAvailable = true;
+        playerMovements.CurrentState = BaseMovements.MovementStates.Dash;
+        yield return new WaitForSecondsRealtime(dashDuration);
         isDashing = false;
+        yield return new WaitForSecondsRealtime(dashDuration + (dashDuration * .1f));
+        playerMovements.CurrentState = BaseMovements.MovementStates.Walk;
+        yield return new WaitForSecondsRealtime(cooldown);
+        dashAvailable = true;
     }
 }
