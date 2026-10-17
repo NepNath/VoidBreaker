@@ -8,7 +8,7 @@ public class SceneReloader : MonoBehaviour
     [SerializeField] private string SceneNameToReload;
     void Update()
     {
-        if (Input.GetKey(InputsToReload[0]) && Input.GetKey(InputsToReload[1]))
+        if (InputsToReload.Count >= 2 && Input.GetKey(InputsToReload[0]) && Input.GetKeyDown(InputsToReload[1]))
         {
             ReloadScene();
         }

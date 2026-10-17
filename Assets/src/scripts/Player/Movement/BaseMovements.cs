@@ -29,7 +29,6 @@ public class BaseMovements : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         GroundDetector = GetComponent<GroundDetector>();
         DashManager = GetComponent<DashManager>();
-        rb.linearDamping = PlayerDamping;
     }
     private void FixedUpdate() 
     {
@@ -69,6 +68,7 @@ public class BaseMovements : MonoBehaviour
     {
         if (GroundDetector.IsGrounded() && Input.GetKeyDown(KeyCode.Space))
         {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
         }
     }
@@ -87,15 +87,15 @@ public class BaseMovements : MonoBehaviour
     /// <returns>The updated movement state of the player character.</returns>
     private MovementStates UpdateMovementState()
     {
-        if(!GroundDetector.IsGrounded())
-        {
-            CurrentState = MovementStates.Airborne;
-            PlayerDamping = airBorneDamping;
-        }
-        else if (DashManager.isDashing)
+        if (DashManager.isDashing)
         {
             CurrentState = MovementStates.Dash;
             PlayerDamping = dashDamping;
+        }
+        else if(!GroundDetector.IsGrounded())
+        {
+            CurrentState = MovementStates.Airborne;
+            PlayerDamping = airBorneDamping;
         }
         else
         {
@@ -120,22 +120,10 @@ public class BaseMovements : MonoBehaviour
         }
     }
     
-    /// <summary>assign the speed value of the player depending on its current movement state</summary>
-    /// <returns> current speed float value of the player</returns>
-    public float CurrentPlayerDamping()
+    /// <summary>apply the damping value of the player depending on its current movement state</summary>
+    public void CurrentPlayerDamping()
     {
         rb.linearDamping = PlayerDamping;
-        switch(CurrentState)
-        {
-            case MovementStates.Walk:
-                return groundDamping;
-            case MovementStates.Airborne:
-                return airBorneDamping;
-            case MovementStates.Dash:
-                return dashDamping;
-            default:
-                return 0f;
-        }
     }
 
 

@@ -20,7 +20,8 @@ public class DashManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashAvailable)
         {
             StartCoroutine(DashStateManager(dashCooldown));
-            playerMovements.rb.AddForce(playerMovements.CurrentMovementDirection() * (playerMovements.dashForce), ForceMode.Impulse);
+            Vector3 dashDirection = playerMovements.CurrentMovementDirection() == Vector3.zero ? transform.forward : playerMovements.CurrentMovementDirection();
+            playerMovements.rb.AddForce(dashDirection * playerMovements.dashForce, ForceMode.Impulse);
         }
     }
     
@@ -28,12 +29,9 @@ public class DashManager : MonoBehaviour
     {
         dashAvailable = false;
         isDashing = true;
-        playerMovements.CurrentState = BaseMovements.MovementStates.Dash;
-        yield return new WaitForSecondsRealtime(dashDuration);
+        yield return new WaitForSeconds(dashDuration);
         isDashing = false;
-        yield return new WaitForSecondsRealtime(dashDuration + (dashDuration * .1f));
-        playerMovements.CurrentState = BaseMovements.MovementStates.Walk;
-        yield return new WaitForSecondsRealtime(cooldown);
+        yield return new WaitForSeconds(cooldown);
         dashAvailable = true;
     }
 }
