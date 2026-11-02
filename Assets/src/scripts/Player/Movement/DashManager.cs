@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using System.Collections;
 public class DashManager : MonoBehaviour
@@ -35,3 +36,4 @@ public class DashManager : MonoBehaviour
         dashAvailable = true;
     }
 }
+*/

@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using UnityEngine;
 
 public class BaseMovements : MonoBehaviour
@@ -9,16 +9,11 @@ public class BaseMovements : MonoBehaviour
     public float dashForce;
     public float airBorneSpeed;
     public float jumpForce;
+    public Vector3 Velocity;
     
-    [Header("Damping variables")]
-    public float groundDamping;
-    public float airBorneDamping;
-    public float dashDamping;
-    
-    [HideInInspector] public float PlayerDamping;
     
     [Header("References")]
-    public Rigidbody rb;
+    public CharacterController controller;
     public MovementStates CurrentState;
     private GroundDetector GroundDetector;
     private DashManager DashManager;
@@ -26,7 +21,7 @@ public class BaseMovements : MonoBehaviour
     //----------- Unity built in --------------//
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        controller = GetComponent<CharacterController>();
         GroundDetector = GetComponent<GroundDetector>();
         DashManager = GetComponent<DashManager>();
     }
@@ -39,7 +34,6 @@ public class BaseMovements : MonoBehaviour
         Jump();
         DashManager.DashAction();
         UpdateMovementState();
-        CurrentPlayerDamping();
         
     }
     
@@ -55,11 +49,7 @@ public class BaseMovements : MonoBehaviour
         {
             return;
         }
-        rb.AddForce(new Vector3(
-            CurrentMovementDirection().x * CurrentMovementSpeed(),
-            0,
-            CurrentMovementDirection().z * CurrentMovementSpeed()
-            ), ForceMode.VelocityChange);
+        
     }
     /// <summary>
     /// Executes the logic for the jump action of the player character.
@@ -90,17 +80,14 @@ public class BaseMovements : MonoBehaviour
         if (DashManager.isDashing)
         {
             CurrentState = MovementStates.Dash;
-            PlayerDamping = dashDamping;
         }
         else if(!GroundDetector.IsGrounded())
         {
             CurrentState = MovementStates.Airborne;
-            PlayerDamping = airBorneDamping;
         }
         else
         {
             CurrentState = MovementStates.Walk;
-            PlayerDamping = groundDamping;
         }
         
         return CurrentState;
@@ -120,13 +107,6 @@ public class BaseMovements : MonoBehaviour
         }
     }
     
-    /// <summary>apply the damping value of the player depending on its current movement state</summary>
-    public void CurrentPlayerDamping()
-    {
-        rb.linearDamping = PlayerDamping;
-    }
-
-
     /// <summary>Gets the current movement direction of the player </summary>
     /// <returns> A vector3 representing the current movement direction of the player</returns>
     public Vector3 CurrentMovementDirection()
@@ -138,4 +118,4 @@ public class BaseMovements : MonoBehaviour
 
         return inputDirection.normalized;
     }
-}
+}*/
