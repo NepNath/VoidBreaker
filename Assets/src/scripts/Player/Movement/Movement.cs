@@ -41,6 +41,10 @@ public class Movement : MonoBehaviour
     {
         Tick(Time.fixedDeltaTime);
     }
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(10, 10, 300, 20), $"Speed : {HorizontalSpeed:F2} m/s");
+    }
 
     // ------ Movements ------ //
     private void ApplyFriction(float dt)
@@ -52,16 +56,44 @@ public class Movement : MonoBehaviour
         {
             velocity.x = 0f;
             velocity.z = 0f;
+            return;
         }
+
+        float control = Mathf.Max(speed, stopSpeed);
+        float drop = control * damping * dt;
+        float newSpeed = Mathf.Max(speed - drop, 0f);
+
+        horizontal *= newSpeed / speed;
+        velocity.x = horizontal.x;
+        velocity.z = horizontal.z;
+    }
+    private void Acccelerate(Vector3 dir, float speed, float accel, float dt)
+    {
+        float currentSpeed = Vector3.Dot(velocity, dir);
+        float addSpeed = speed - currentSpeed;
+
+        if (addSpeed <= 0f)
+        {
+            return;
+        }
+
+        float accelSpeed = Math.Min(accel * speed * dt, addSpeed);
+        velocity += dir * accelSpeed;
     }
     
     // ------ Game Logic ------ //
     private void Tick(float dt)
     {
         isGrounded = controller.isGrounded;
-
+        Vector3 dir = getDirection();
+        
+        if (isGrounded)
+        {
+            ApplyFriction(dt);
+            Acccelerate(dir, walkSpeed, groundAcceleration, dt);
+        }
+        
         ApplyGravity(dt);
-
         controller.Move(velocity * dt);
         
     }

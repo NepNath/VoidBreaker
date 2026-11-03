@@ -10728,6 +10728,10 @@ MonoBehaviour:
   gravityFallMult: 1
   groundStickGravity: -2
   maxFallSpeed: -100
+  walkSpeed: 8
+  groundAcceleration: 10
+  damping: 4
+  stopSpeed: 2.5
 --- !u!43 &1049436112
 Mesh:
   m_ObjectHideFlags: 0
