@@ -1,4 +1,3 @@
-/*
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -6,39 +5,37 @@ public class CameraManager : MonoBehaviour
     [Range(0f, 10f)]
     public float sensitivity = 1f;
 
+    [SerializeField] private Camera playerCamera;
+
     private float pitch;
     private float minPitch = -90f;
     private float maxPitch = 90f;
-    
-    [SerializeField] private Camera playerCamera;
-    private BaseMovements playerMovements;
-
 
     private void Start()
     {
-        playerMovements = GetComponent<BaseMovements>();
-        playerCamera = GetComponentInChildren<Camera>();
+        if (playerCamera == null)
+        {
+            playerCamera = GetComponentInChildren<Camera>();
+        }
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     private void Update()
     {
-        cameraMovement();
+        CameraMovement();
     }
-    
-    void cameraMovement()
+
+    private void CameraMovement()
     {
-        float mouseVrt = Input.GetAxis("Mouse Y") * sensitivity * 10f;
-        float mouseHrz = Input.GetAxis("Mouse X") * sensitivity * 10f;
+        float mouseVrt = Input.GetAxisRaw("Mouse Y") * sensitivity * 10f;
+        float mouseHrz = Input.GetAxisRaw("Mouse X") * sensitivity * 10f;
 
         pitch -= mouseVrt;
-
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-        playerMovements.rb.transform.Rotate(Vector3.up * mouseHrz);
-
+        transform.Rotate(Vector3.up * mouseHrz);
     }
 }
-*/

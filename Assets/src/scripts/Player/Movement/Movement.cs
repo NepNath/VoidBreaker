@@ -16,6 +16,12 @@ public class Movement : MonoBehaviour
     public float groundAcceleration;
     public float damping;
     public float stopSpeed;
+
+    [Header("Jump")]
+    public float jumpForce;
+    public float jumpBufferTime;
+    
+    private float jumpBufferTimer;
     
     [Header("unsorted")]
     private CharacterController controller;
@@ -44,6 +50,18 @@ public class Movement : MonoBehaviour
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 300, 20), $"Speed : {HorizontalSpeed:F2} m/s");
+    }
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.normal.y > 0.7f)
+        {
+            return;
+        }
+
+        if (Vector3.Dot(velocity, hit.normal) < 0f)
+        {
+            velocity = Vector3.ProjectOnPlane(velocity, hit.normal);
+        }
     }
 
     // ------ Movements ------ //
@@ -80,19 +98,36 @@ public class Movement : MonoBehaviour
         float accelSpeed = Math.Min(accel * speed * dt, addSpeed);
         velocity += dir * accelSpeed;
     }
+    private void Jump()
+    {
+        velocity.y = jumpForce;
+        jumpBufferTimer = 0f;
+    }
     
     // ------ Game Logic ------ //
     private void Tick(float dt)
     {
         isGrounded = controller.isGrounded;
         Vector3 dir = getDirection();
+        bool isJumping = jumpBufferTimer > 0f;
         
         if (isGrounded)
         {
+            if (!isJumping)
+            {
+                ApplyFriction(dt);
+            }
             ApplyFriction(dt);
             Acccelerate(dir, walkSpeed, groundAcceleration, dt);
+            if (isJumping)
+            {
+                Jump();
+            }
         }
-        
+
+     
+
+        jumpBufferTimer = Mathf.Max(jumpBufferTimer - dt, 0f);
         ApplyGravity(dt);
         controller.Move(velocity * dt);
         
@@ -100,6 +135,11 @@ public class Movement : MonoBehaviour
     private void ReadInput()
     {
         input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpBufferTimer = jumpBufferTime;
+        }
     }
     
     // ------ Getters ------ //
