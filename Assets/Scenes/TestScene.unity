@@ -10735,6 +10735,8 @@ MonoBehaviour:
   stopSpeed: 2.5
   jumpForce: 5
   jumpBufferTime: 0.1
+  airAccel: 10
+  airSpeed: 0.78
 --- !u!114 &1046435531
 MonoBehaviour:
   m_ObjectHideFlags: 0
