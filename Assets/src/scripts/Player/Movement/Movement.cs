@@ -20,8 +20,11 @@ public class Movement : MonoBehaviour
     [Header("Jump")]
     public float jumpForce;
     public float jumpBufferTime;
-    
     private float jumpBufferTimer;
+
+    [Header("airborne")] 
+    public float airAccel;
+    public float airSpeed;
     
     [Header("unsorted")]
     private CharacterController controller;
@@ -103,6 +106,21 @@ public class Movement : MonoBehaviour
         velocity.y = jumpForce;
         jumpBufferTimer = 0f;
     }
+
+    private void AirAcceleration(Vector3 dir, float speed, float dt)
+    {
+        float cappedSpeed = Mathf.Min(speed, airSpeed);
+        float currentSpeed = Vector3.Dot(velocity, dir);
+        float addSpeed = cappedSpeed - currentSpeed;
+
+        if (addSpeed < 0f)
+        {
+            return;
+        }
+
+        float accelSpeed = Mathf.Min(airAccel * speed * dt, airSpeed);
+        velocity += dir * accelSpeed;
+    }
     
     // ------ Game Logic ------ //
     private void Tick(float dt)
@@ -123,6 +141,10 @@ public class Movement : MonoBehaviour
             {
                 Jump();
             }
+        }
+        else
+        {
+            AirAcceleration(dir, walkSpeed, dt);
         }
 
      
